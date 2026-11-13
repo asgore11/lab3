@@ -1,185 +1,345 @@
 
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     background: #101722;
     color: #f1f5f9;
-    padding: 25px;
+    min-height: 100vh;
 }
 
 .container {
-    max-width: 1150px;
+    width: 92%;
+    max-width: 1400px;
     margin: auto;
 }
 
-header {
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    padding: 25px;
-    background: #1b2737;
-    border-left: 5px solid #ef4444;
-    border-radius: 12px;
-    margin-bottom: 30px;
+    gap: 20px;
+    padding: 30px 0;
+    border-bottom: 1px solid #334155;
 }
 
-header h1 {
-    font-size: 27px;
-    margin-bottom: 8px;
-}
-
-header p {
-    color: #94a3b8;
-}
-
-.connection {
+.header-title {
     display: flex;
     align-items: center;
-    gap: 9px;
-    background: #263448;
-    padding: 12px 16px;
-    border-radius: 25px;
+    gap: 16px;
+}
+
+.logo {
+    width: 58px;
+    height: 58px;
+    background: #293548;
+    border: 1px solid #475569;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+
+.header h1 {
+    font-size: 25px;
+    letter-spacing: 1px;
+    margin-bottom: 7px;
+}
+
+.header p {
+    color: #94a3b8;
     font-size: 14px;
+}
+
+.connection-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 12px 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    white-space: nowrap;
 }
 
 #connectionDot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #eab308;
+    display: inline-block;
 }
 
-h2 {
+#connectionDot.connecting {
+    background: #f59e0b;
+    box-shadow: 0 0 10px #f59e0b;
+}
+
+#connectionDot.connected {
+    background: #22c55e;
+    box-shadow: 0 0 10px #22c55e;
+}
+
+#connectionDot.disconnected {
+    background: #ef4444;
+    box-shadow: 0 0 10px #ef4444;
+}
+
+main {
+    padding: 25px 0;
+}
+
+.section {
+    margin-bottom: 35px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.section-title h2 {
     font-size: 19px;
-    margin: 28px 0 17px;
-    padding-left: 12px;
-    border-left: 4px solid #ef4444;
+    letter-spacing: 0.8px;
 }
 
-.sensor-container,
-.chart-container,
+.section-title span {
+    font-size: 11px;
+    color: #64748b;
+    letter-spacing: 1px;
+}
+
+.sensor-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.sensor-card {
+    background: #1b2737;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 25px;
+    min-height: 210px;
+    transition: 0.2s;
+}
+
+.sensor-card:hover,
+.chart-card:hover,
+.control-card:hover {
+    border-color: #64748b;
+    transform: translateY(-2px);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.sensor-icon {
+    font-size: 30px;
+}
+
+.sensor-label {
+    color: #94a3b8;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.sensor-card h3 {
+    color: #cbd5e1;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.sensor-value {
+    margin: 15px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.sensor-value span:first-child {
+    font-size: 42px;
+    font-weight: bold;
+}
+
+.unit {
+    font-size: 19px;
+    color: #94a3b8;
+}
+
+.gas-card .sensor-value {
+    color: #fb7185;
+}
+
+.temp-card .sensor-value {
+    color: #38bdf8;
+}
+
+.sensor-status {
+    display: inline-block;
+    background: #263449;
+    color: #94a3b8;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.chart-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.chart-card {
+    background: #1b2737;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 22px;
+    transition: 0.2s;
+}
+
+.chart-card h3 {
+    font-size: 15px;
+    margin-bottom: 20px;
+    color: #cbd5e1;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 260px;
+    width: 100%;
+}
+
 .control-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
 }
 
-.sensor-card,
-.chart-card,
 .control-card {
     background: #1b2737;
     border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: 0.2s;
+}
+
+.device-icon {
+    width: 55px;
+    height: 55px;
     border-radius: 12px;
-    padding: 24px;
+    background: #293548;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 27px;
+    flex-shrink: 0;
 }
 
-.sensor-icon {
-    font-size: 28px;
-    margin-bottom: 15px;
+.device-info {
+    flex: 1;
 }
 
-.sensor-card p {
-    color: #94a3b8;
+.device-info h3 {
     font-size: 14px;
-    font-weight: bold;
+    margin-bottom: 9px;
 }
 
-.sensor-value {
-    margin: 15px 0;
-}
-
-.sensor-number {
-    font-size: 42px;
-    font-weight: bold;
-}
-
-.gas-card .sensor-number {
-    color: #fb7185;
-}
-
-.temp-card .sensor-number {
-    color: #60a5fa;
-}
-
-.unit {
-    font-size: 20px;
-    color: #cbd5e1;
-}
-
-.sensor-status {
+.device-info p {
     color: #94a3b8;
-    font-size: 13px;
+    font-size: 12px;
 }
 
-.chart-card {
-    height: 300px;
+.device-info strong {
+    color: #f87171;
+    margin-left: 4px;
 }
 
-.chart-card h3 {
-    margin-bottom: 18px;
-    font-size: 16px;
-}
-
-.control-card h3 {
-    margin-bottom: 18px;
-}
-
-.control-card p {
-    color: #cbd5e1;
-    margin-bottom: 20px;
-}
-
-.control-card strong {
-    color: #facc15;
-}
-
-button {
-    width: 100%;
-    padding: 14px;
+.control-button {
     border: none;
-    border-radius: 8px;
-    background: #dc2626;
+    background: #dc3545;
     color: white;
-    font-size: 15px;
+    border-radius: 8px;
+    padding: 12px 16px;
     font-weight: bold;
+    font-size: 12px;
     cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
 }
 
-button:hover {
-    filter: brightness(1.2);
-}
-
-button.off {
-    background: #475569;
+.control-button:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
 }
 
 footer {
+    border-top: 1px solid #334155;
     text-align: center;
+    padding: 22px 10px;
     color: #64748b;
-    font-size: 12px;
-    margin-top: 35px;
-    padding: 20px;
+    font-size: 11px;
+    letter-spacing: 1px;
 }
 
-@media (max-width: 700px) {
-    body {
-        padding: 12px;
-    }
-
-    .sensor-container,
-    .chart-container,
+@media (max-width: 850px) {
     .control-container {
         grid-template-columns: 1fr;
     }
 
-    header h1 {
-        font-size: 21px;
+    .control-card {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 650px) {
+    .container {
+        width: 94%;
+    }
+
+    .header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .header h1 {
+        font-size: 19px;
+    }
+
+    .sensor-container,
+    .chart-container {
+        grid-template-columns: 1fr;
+    }
+
+    .section-title {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .sensor-value span:first-child {
+        font-size: 36px;
+    }
+
+    .control-card {
+        align-items: flex-start;
+    }
+
+    .control-button {
+        width: 100%;
     }
 }
