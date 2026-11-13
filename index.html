@@ -7,96 +7,158 @@
     <title>Hệ thống báo cháy IoT</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div class="container">
+    <div class="container">
 
-    <header>
-        <div>
-            <h1>HỆ THỐNG BÁO CHÁY IoT</h1>
-            <p>Giám sát khí gas, khói và nhiệt độ</p>
-        </div>
-        <div class="connection">
-            <span id="connectionDot"></span>
-            <span id="connection">Đang kết nối...</span>
-        </div>
-    </header>
-
-    <h2>GIÁM SÁT CẢM BIẾN</h2>
-
-    <section class="sensor-container">
-
-        <div class="sensor-card gas-card">
-            <div class="sensor-icon">♨</div>
-            <p>NỒNG ĐỘ KHÍ GAS</p>
-            <div class="sensor-value">
-                <span id="gas" class="sensor-number">--</span>
-                <span class="unit">%</span>
+        <header class="header">
+            <div class="header-title">
+                <div class="logo">🔥</div>
+                <div>
+                    <h1>HỆ THỐNG BÁO CHÁY IoT</h1>
+                    <p>Giám sát khí gas và nhiệt độ theo thời gian thực</p>
+                </div>
             </div>
-            <span class="sensor-status" id="gasStatus">Đang chờ dữ liệu</span>
-        </div>
 
-        <div class="sensor-card temp-card">
-            <div class="sensor-icon">🌡</div>
-            <p>NHIỆT ĐỘ</p>
-            <div class="sensor-value">
-                <span id="temperature" class="sensor-number">--</span>
-                <span class="unit">°C</span>
+            <div class="connection-box">
+                <span id="connectionDot" class="connecting"></span>
+                <span id="connection">Đang kết nối...</span>
             </div>
-            <span class="sensor-status" id="tempStatus">Đang chờ dữ liệu</span>
-        </div>
+        </header>
 
-    </section>
+        <main>
 
-    <h2>BIỂU ĐỒ THEO DÕI THỜI GIAN THỰC</h2>
+            <section class="section">
+                <div class="section-title">
+                    <h2>GIÁM SÁT CẢM BIẾN</h2>
+                    <span>REAL-TIME MONITORING</span>
+                </div>
 
-    <section class="chart-container">
-        <div class="chart-card">
-            <h3>Nồng độ khí gas (%)</h3>
-            <canvas id="gasChart"></canvas>
-        </div>
+                <div class="sensor-container">
 
-        <div class="chart-card">
-            <h3>Nhiệt độ (°C)</h3>
-            <canvas id="tempChart"></canvas>
-        </div>
-    </section>
+                    <div class="sensor-card gas-card">
+                        <div class="card-top">
+                            <div class="sensor-icon">☁️</div>
+                            <span class="sensor-label">MQ2 SENSOR</span>
+                        </div>
 
-    <h2>ĐIỀU KHIỂN THIẾT BỊ - MANUAL</h2>
+                        <h3>Nồng độ khí gas</h3>
 
-    <section class="control-container">
+                        <div class="sensor-value">
+                            <span id="gas">--</span>
+                            <span class="unit">%</span>
+                        </div>
 
-        <div class="control-card">
-            <h3>QUẠT THÔNG GIÓ</h3>
-            <p>Trạng thái:
-                <strong id="fanState">--</strong>
-            </p>
-            <button id="fanButton" onclick="toggleDevice('fan')">
-                BẬT QUẠT
-            </button>
-        </div>
+                        <div class="sensor-status" id="gasStatus">
+                            Đang chờ dữ liệu
+                        </div>
+                    </div>
 
-        <div class="control-card">
-            <h3>MÁY BƠM</h3>
-            <p>Trạng thái:
-                <strong id="pumpState">--</strong>
-            </p>
-            <button id="pumpButton" onclick="toggleDevice('pump')">
-                BẬT MÁY BƠM
-            </button>
-        </div>
+                    <div class="sensor-card temp-card">
+                        <div class="card-top">
+                            <div class="sensor-icon">🌡️</div>
+                            <span class="sensor-label">DHT22 SENSOR</span>
+                        </div>
 
-    </section>
+                        <h3>Nhiệt độ môi trường</h3>
 
-    <footer>
-        HỆ THỐNG GIÁM SÁT VÀ CẢNH BÁO CHÁY SỬ DỤNG ESP32 - MQTT
-    </footer>
+                        <div class="sensor-value">
+                            <span id="temperature">--</span>
+                            <span class="unit">°C</span>
+                        </div>
 
-</div>
+                        <div class="sensor-status" id="tempStatus">
+                            Đang chờ dữ liệu
+                        </div>
+                    </div>
 
-<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="script.js"></script>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-title">
+                    <h2>BIỂU ĐỒ GIÁM SÁT</h2>
+                    <span>LIVE SENSOR CHARTS</span>
+                </div>
+
+                <div class="chart-container">
+
+                    <div class="chart-card">
+                        <h3>Biểu đồ nồng độ khí gas</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="gasChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <h3>Biểu đồ nhiệt độ</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="tempChart"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-title">
+                    <h2>ĐIỀU KHIỂN THIẾT BỊ</h2>
+                    <span>MANUAL CONTROL</span>
+                </div>
+
+                <div class="control-container">
+
+                    <div class="control-card">
+                        <div class="device-icon">🌀</div>
+
+                        <div class="device-info">
+                            <h3>QUẠT THÔNG GIÓ</h3>
+                            <p>Trạng thái:
+                                <strong id="fanState">ĐANG TẮT</strong>
+                            </p>
+                        </div>
+
+                        <button
+                            id="fanButton"
+                            class="control-button"
+                            onclick="toggleDevice('fan')">
+                            BẬT QUẠT
+                        </button>
+                    </div>
+
+                    <div class="control-card">
+                        <div class="device-icon">💧</div>
+
+                        <div class="device-info">
+                            <h3>MÁY BƠM</h3>
+                            <p>Trạng thái:
+                                <strong id="pumpState">ĐANG TẮT</strong>
+                            </p>
+                        </div>
+
+                        <button
+                            id="pumpButton"
+                            class="control-button"
+                            onclick="toggleDevice('pump')">
+                            BẬT MÁY BƠM
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+
+        <footer>
+            <p>HỆ THỐNG BÁO CHÁY IoT | ESP32 - MQTT - GITHUB PAGES</p>
+        </footer>
+
+    </div>
+
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
 
 </body>
 </html>
