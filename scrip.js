@@ -1,225 +1,309 @@
 
-const broker = "wss://broker.hivemq.com:8884/mqtt";
+const BROKER = "wss://broker.hivemq.com:8884/mqtt";
 
-const options = {
-    clean: true,
-    connectTimeout: 4000,
-    clientId: "WebFireAlarm_" + Math.random().toString(16).slice(2, 10)
-};
+const TOPIC_GAS = "firealarm476646/gas";
+const TOPIC_TEMP = "firealarm476646/temperature";
 
-const broker = "wss://broker.hivemq.com:8884/mqtt";
+const TOPIC_FAN_SET = "firealarm476646/fan/set";
+const TOPIC_PUMP_SET = "firealarm476646/pump/set";
 
-const client = mqtt.connect(broker);
+const TOPIC_FAN_STATE = "firealarm476646/fan/state";
+const TOPIC_PUMP_STATE = "firealarm476646/pump/state";
 
-client.on("connect", function () {
-    client.subscribe("firealarm476646/gas");
-    client.subscribe("firealarm476646/temperature");
-    client.subscribe("firealarm476646/fan/state");
-    client.subscribe("firealarm476646/pump/state");
-});
+const GAS_THRESHOLD = 40;
+const TEMP_THRESHOLD = 35;
+
+let client = null;
 
 let fanOn = false;
 let pumpOn = false;
 
-const labels = [];
-const gasData = [];
-const tempData = [];
+let gasChart = null;
+let tempChart = null;
 
-const gasChart = new Chart(
-    document.getElementById("gasChart"),
-    {
-        type: "line",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Nồng độ khí gas",
-                data: gasData,
-                borderColor: "#fb7185",
-                backgroundColor: "rgba(251,113,133,0.15)",
-                fill: true,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    }
-);
+const gasLabels = [];
+const gasValues = [];
 
-const tempChart = new Chart(
-    document.getElementById("tempChart"),
-    {
-        type: "line",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Nhiệt độ",
-                data: tempData,
-                borderColor: "#60a5fa",
-                backgroundColor: "rgba(96,165,250,0.15)",
-                fill: true,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    }
-);
+const tempLabels = [];
+const tempValues = [];
 
-client.on("connect", function () {
-    document.getElementById("connection").innerText =
-        "Đã kết nối MQTT";
+function setConnection(status, message) {
+    const connection = document.getElementById("connection");
+    const dot = document.getElementById("connectionDot");
 
-    document.getElementById("connectionDot").style.background =
-        "#22c55e";
-
-    client.subscribe([
-        TOPIC_GAS,
-        TOPIC_TEMP,
-        TOPIC_FAN_STATE,
-        TOPIC_PUMP_STATE
-    ]);
-});
-
-client.on("error", function (error) {
-    document.getElementById("connection").innerText =
-        "Lỗi kết nối MQTT";
-
-    document.getElementById("connectionDot").style.background =
-        "#ef4444";
-
-    console.log(error);
-});
-
-client.on("offline", function () {
-    document.getElementById("connection").innerText =
-        "Mất kết nối MQTT";
-
-    document.getElementById("connectionDot").style.background =
-        "#ef4444";
-});
-
-function updateChart() {
-    if (labels.length > 20) {
-        labels.shift();
-        gasData.shift();
-        tempData.shift();
+    if (connection) {
+        connection.textContent = message;
     }
 
-    gasChart.update();
-    tempChart.update();
-}
-
-client.on("message", function (topic, message) {
-    const value = message.toString();
-
-    if (topic === TOPIC_GAS) {
-        const gas = Number(value);
-
-        if (!Number.isFinite(gas)) return;
-
-        document.getElementById("gas").innerText =
-            gas.toFixed(1);
-
-        document.getElementById("gasStatus").innerText =
-            gas >= 40 ? "CẢNH BÁO KHÍ GAS" : "Bình thường";
-
-        labels.push(new Date().toLocaleTimeString());
-
-        gasData.push(gas);
-        tempData.push(
-            tempData.length > 0
-                ? tempData[tempData.length - 1]
-                : null
-        );
-
-        updateChart();
-    }
-
-    if (topic === TOPIC_TEMP) {
-        const temperature = Number(value);
-
-        if (!Number.isFinite(temperature)) return;
-
-        document.getElementById("temperature").innerText =
-            temperature.toFixed(1);
-
-        document.getElementById("tempStatus").innerText =
-            temperature >= 35
-                ? "CẢNH BÁO NHIỆT ĐỘ"
-                : "Bình thường";
-
-        if (labels.length === 0) {
-            labels.push(new Date().toLocaleTimeString());
-            gasData.push(null);
-        }
-
-        tempData.push(temperature);
-
-        while (tempData.length > labels.length) {
-            labels.push(new Date().toLocaleTimeString());
-            gasData.push(null);
-        }
-
-        updateChart();
-    }
-
-    if (topic === TOPIC_FAN_STATE) {
-        fanOn = value === "ON";
-        updateDeviceButton("fan");
-    }
-
-    if (topic === TOPIC_PUMP_STATE) {
-        pumpOn = value === "ON";
-        updateDeviceButton("pump");
-    }
-});
-
-function updateDeviceButton(device) {
-    if (device === "fan") {
-        document.getElementById("fanState").innerText =
-            fanOn ? "ĐANG BẬT" : "ĐANG TẮT";
-
-        const button = document.getElementById("fanButton");
-
-        button.innerText = fanOn ? "TẮT QUẠT" : "BẬT QUẠT";
-        button.classList.toggle("off", fanOn);
-    }
-
-    if (device === "pump") {
-        document.getElementById("pumpState").innerText =
-            pumpOn ? "ĐANG BẬT" : "ĐANG TẮT";
-
-        const button = document.getElementById("pumpButton");
-
-        button.innerText = pumpOn
-            ? "TẮT MÁY BƠM"
-            : "BẬT MÁY BƠM";
-
-        button.classList.toggle("off", pumpOn);
+    if (dot) {
+        dot.className = status;
     }
 }
 
-function toggleDevice(device) {
-    if (!client.connected) {
-        alert("Chưa kết nối MQTT Broker!");
+function createCharts() {
+    if (typeof Chart === "undefined") {
+        console.error("Khong tim thay thu vien Chart.js");
         return;
     }
 
-    if (device === "fan") {
-        client.publish(
-            TOPIC_FAN_SET,
-            fanOn ? "OFF" : "ON"
-        );
+    const gasCanvas = document.getElementById("gasChart");
+    const tempCanvas = document.getElementById("tempChart");
+
+    if (gasCanvas) {
+        gasChart = new Chart(gasCanvas, {
+            type: "line",
+            data: {
+                labels: gasLabels,
+                datasets: [{
+                    label: "Nong do gas (%)",
+                    data: gasValues,
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
     }
 
-    if (device === "pump") {
-        client.publish(
-            TOPIC_PUMP_SET,
-            pumpOn ? "OFF" : "ON"
-        );
+    if (tempCanvas) {
+        tempChart = new Chart(tempCanvas, {
+            type: "line",
+            data: {
+                labels: tempLabels,
+                datasets: [{
+                    label: "Nhiet do (°C)",
+                    data: tempValues,
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     }
 }
+
+function updateChart(chart, labels, values, value) {
+    if (!chart) return;
+
+    const now = new Date().toLocaleTimeString("vi-VN");
+
+    labels.push(now);
+    values.push(value);
+
+    if (labels.length > 20) {
+        labels.shift();
+        values.shift();
+    }
+
+    chart.update("none");
+}
+
+function updateGas(value) {
+    const gasElement = document.getElementById("gas");
+    const statusElement = document.getElementById("gasStatus");
+
+    if (gasElement) {
+        gasElement.textContent = value.toFixed(2) + " %";
+    }
+
+    if (statusElement) {
+        statusElement.textContent =
+            value > GAS_THRESHOLD ? "CANH BAO" : "Binh thuong";
+    }
+
+    updateChart(gasChart, gasLabels, gasValues, value);
+}
+
+function updateTemperature(value) {
+    const tempElement = document.getElementById("temperature");
+    const statusElement = document.getElementById("tempStatus");
+
+    if (tempElement) {
+        tempElement.textContent = value.toFixed(2) + " °C";
+    }
+
+    if (statusElement) {
+        statusElement.textContent =
+            value > TEMP_THRESHOLD ? "CANH BAO" : "Binh thuong";
+    }
+
+    updateChart(tempChart, tempLabels, tempValues, value);
+}
+
+function updateFanState(state) {
+    fanOn = state === "ON";
+
+    const stateElement = document.getElementById("fanState");
+    const button = document.getElementById("fanButton");
+
+    if (stateElement) {
+        stateElement.textContent = fanOn ? "ĐANG BẬT" : "ĐANG TẮT";
+    }
+
+    if (button) {
+        button.textContent = fanOn ? "TẮT QUẠT" : "BẬT QUẠT";
+    }
+}
+
+function updatePumpState(state) {
+    pumpOn = state === "ON";
+
+    const stateElement = document.getElementById("pumpState");
+    const button = document.getElementById("pumpButton");
+
+    if (stateElement) {
+        stateElement.textContent = pumpOn ? "ĐANG BẬT" : "ĐANG TẮT";
+    }
+
+    if (button) {
+        button.textContent = pumpOn ? "TẮT MÁY BƠM" : "BẬT MÁY BƠM";
+    }
+}
+
+function connectMQTT() {
+    if (typeof mqtt === "undefined") {
+        setConnection("disconnected", "Lỗi thư viện MQTT");
+        console.error("Khong tai duoc MQTT.js");
+        return;
+    }
+
+    setConnection("connecting", "Đang kết nối...");
+
+    const options = {
+        clientId: "FireAlarmWeb_" + Math.random().toString(16).slice(2, 10),
+        clean: true,
+        connectTimeout: 10000,
+        reconnectPeriod: 3000
+    };
+
+    client = mqtt.connect(BROKER, options);
+
+    client.on("connect", function () {
+        console.log("Da ket noi MQTT HiveMQ!");
+
+        setConnection("connected", "Đã kết nối MQTT");
+
+        client.subscribe([
+            TOPIC_GAS,
+            TOPIC_TEMP,
+            TOPIC_FAN_STATE,
+            TOPIC_PUMP_STATE
+        ], function (error) {
+            if (error) {
+                console.error("Loi dang ky Topic:", error);
+            } else {
+                console.log("Da dang ky cac Topic!");
+            }
+        });
+    });
+
+    client.on("message", function (topic, message) {
+        const value = message.toString().trim();
+
+        console.log("Nhan du lieu:", topic, value);
+
+        if (topic === TOPIC_GAS) {
+            const gas = Number(value);
+
+            if (Number.isFinite(gas)) {
+                updateGas(gas);
+            }
+        }
+
+        else if (topic === TOPIC_TEMP) {
+            const temperature = Number(value);
+
+            if (Number.isFinite(temperature)) {
+                updateTemperature(temperature);
+            }
+        }
+
+        else if (topic === TOPIC_FAN_STATE) {
+            updateFanState(value);
+        }
+
+        else if (topic === TOPIC_PUMP_STATE) {
+            updatePumpState(value);
+        }
+    });
+
+    client.on("reconnect", function () {
+        setConnection("connecting", "Đang kết nối lại...");
+        console.log("Dang ket noi lai MQTT...");
+    });
+
+    client.on("offline", function () {
+        setConnection("disconnected", "Mất kết nối MQTT");
+        console.log("MQTT offline");
+    });
+
+    client.on("close", function () {
+        setConnection("disconnected", "Đã ngắt kết nối");
+    });
+
+    client.on("error", function (error) {
+        console.error("Loi MQTT:", error);
+        setConnection("disconnected", "Lỗi kết nối MQTT");
+    });
+}
+
+function toggleDevice(device) {
+    if (!client || !client.connected) {
+        alert("Website chua ket noi MQTT!");
+        return;
+    }
+
+    let topic;
+    let command;
+
+    if (device === "fan") {
+        topic = TOPIC_FAN_SET;
+        command = fanOn ? "OFF" : "ON";
+    }
+
+    else if (device === "pump") {
+        topic = TOPIC_PUMP_SET;
+        command = pumpOn ? "OFF" : "ON";
+    }
+
+    else {
+        return;
+    }
+
+    client.publish(topic, command, function (error) {
+        if (error) {
+            console.error("Loi gui lenh:", error);
+            alert("Khong gui duoc lenh dieu khien!");
+        } else {
+            console.log("Da gui lenh:", topic, command);
+        }
+    });
+}
+
+window.toggleDevice = toggleDevice;
+
+document.addEventListener("DOMContentLoaded", function () {
+    createCharts();
+    connectMQTT();
+});
