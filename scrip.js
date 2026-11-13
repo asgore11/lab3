@@ -9,14 +9,14 @@ const options = {
 
 const broker = "wss://broker.hivemq.com:8884/mqtt";
 
-const TOPIC_GAS = "firealarm476646/gas";
-const TOPIC_TEMP = "firealarm476646/temperature";
+const client = mqtt.connect(broker);
 
-const TOPIC_FAN_SET = "firealarm476646/fan/set";
-const TOPIC_PUMP_SET = "firealarm476646/pump/set";
-
-const TOPIC_FAN_STATE = "firealarm476646/fan/state";
-const TOPIC_PUMP_STATE = "firealarm476646/pump/state";
+client.on("connect", function () {
+    client.subscribe("firealarm476646/gas");
+    client.subscribe("firealarm476646/temperature");
+    client.subscribe("firealarm476646/fan/state");
+    client.subscribe("firealarm476646/pump/state");
+});
 
 let fanOn = false;
 let pumpOn = false;
