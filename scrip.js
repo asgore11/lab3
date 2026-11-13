@@ -1,4 +1,4 @@
-const ID = "PHAMTIENLUC"
+
 const BROKER = "wss://broker.hivemq.com:8884/mqtt";
 
 const TOPIC_GAS = "PHAMTIENLUC/gas";
@@ -9,199 +9,156 @@ const TOPIC_PUMP_SET = "PHAMTIENLUC/pump/set";
 
 const TOPIC_FAN_STATE = "PHAMTIENLUC/fan/state";
 const TOPIC_PUMP_STATE = "PHAMTIENLUC/pump/state";
+
 const GAS_THRESHOLD = 40;
 const TEMP_THRESHOLD = 35;
 
 let client = null;
 
-let fanOn = false;
-let pumpOn = false;
-
 let gasChart = null;
 let tempChart = null;
 
-const gasLabels = [];
-const gasValues = [];
+let fanOn = null;
+let pumpOn = null;
 
-const tempLabels = [];
-const tempValues = [];
-
-function setConnection(status, message) {
-    const connection = document.getElementById("connection");
+function updateConnection(status, message) {
     const dot = document.getElementById("connectionDot");
+    const text = document.getElementById("connection");
 
-    if (connection) {
-        connection.textContent = message;
-    }
-
-    if (dot) {
-        dot.className = status;
-    }
+    dot.className = "dot " + status;
+    text.textContent = message;
 }
 
 function createCharts() {
-    if (typeof Chart === "undefined") {
-        console.error("Khong tim thay thu vien Chart.js");
-        return;
-    }
+    const gasContext = document.getElementById("gasChart").getContext("2d");
+    const tempContext = document.getElementById("tempChart").getContext("2d");
 
-    const gasCanvas = document.getElementById("gasChart");
-    const tempCanvas = document.getElementById("tempChart");
-
-    if (gasCanvas) {
-        gasChart = new Chart(gasCanvas, {
-            type: "line",
-            data: {
-                labels: gasLabels,
-                datasets: [{
-                    label: "Nong do gas (%)",
-                    data: gasValues,
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
-                    }
+    gasChart = new Chart(gasContext, {
+        type: "line",
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Khí gas (%)",
+                data: [],
+                borderColor: "#38bdf8",
+                backgroundColor: "rgba(56, 189, 248, 0.15)",
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            scales: {
+                y: {
+                    min: 0,
+                    max: 100
                 }
             }
-        });
-    }
+        }
+    });
 
-    if (tempCanvas) {
-        tempChart = new Chart(tempCanvas, {
-            type: "line",
-            data: {
-                labels: tempLabels,
-                datasets: [{
-                    label: "Nhiet do (°C)",
-                    data: tempValues,
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
+    tempChart = new Chart(tempContext, {
+        type: "line",
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Nhiệt độ (°C)",
+                data: [],
+                borderColor: "#f97316",
+                backgroundColor: "rgba(249, 115, 22, 0.15)",
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false
+        }
+    });
 }
 
-function updateChart(chart, labels, values, value) {
-    if (!chart) return;
+function addChartData(chart, value) {
+    const time = new Date().toLocaleTimeString("vi-VN");
 
-    const now = new Date().toLocaleTimeString("vi-VN");
+    chart.data.labels.push(time);
+    chart.data.datasets[0].data.push(value);
 
-    labels.push(now);
-    values.push(value);
-
-    if (labels.length > 20) {
-        labels.shift();
-        values.shift();
+    if (chart.data.labels.length > 20) {
+        chart.data.labels.shift();
+        chart.data.datasets[0].data.shift();
     }
 
     chart.update("none");
 }
 
 function updateGas(value) {
-    const gasElement = document.getElementById("gas");
-    const statusElement = document.getElementById("gasStatus");
+    document.getElementById("gas").textContent = value.toFixed(2);
 
-    if (gasElement) {
-        gasElement.textContent = value.toFixed(2) + " %";
+    const status = document.getElementById("gasStatus");
+
+    if (value > GAS_THRESHOLD) {
+        status.textContent = "CẢNH BÁO: Nồng độ khí gas cao";
+        status.className = "status warning";
+    } else {
+        status.textContent = "Bình thường";
+        status.className = "status normal";
     }
 
-    if (statusElement) {
-        statusElement.textContent =
-            value > GAS_THRESHOLD ? "CANH BAO" : "Binh thuong";
-    }
-
-    updateChart(gasChart, gasLabels, gasValues, value);
+    addChartData(gasChart, value);
 }
 
 function updateTemperature(value) {
-    const tempElement = document.getElementById("temperature");
-    const statusElement = document.getElementById("tempStatus");
+    document.getElementById("temperature").textContent = value.toFixed(2);
 
-    if (tempElement) {
-        tempElement.textContent = value.toFixed(2) + " °C";
+    const status = document.getElementById("tempStatus");
+
+    if (value > TEMP_THRESHOLD) {
+        status.textContent = "CẢNH BÁO: Nhiệt độ cao";
+        status.className = "status warning";
+    } else {
+        status.textContent = "Bình thường";
+        status.className = "status normal";
     }
 
-    if (statusElement) {
-        statusElement.textContent =
-            value > TEMP_THRESHOLD ? "CANH BAO" : "Binh thuong";
-    }
-
-    updateChart(tempChart, tempLabels, tempValues, value);
+    addChartData(tempChart, value);
 }
 
-function updateFanState(state) {
-    fanOn = state === "ON";
+function updateDeviceState(device, message) {
+    const state = message.toString().trim().toUpperCase();
 
-    const stateElement = document.getElementById("fanState");
-    const button = document.getElementById("fanButton");
-
-    if (stateElement) {
-        stateElement.textContent = fanOn ? "ĐANG BẬT" : "ĐANG TẮT";
-    }
-
-    if (button) {
-        button.textContent = fanOn ? "TẮT QUẠT" : "BẬT QUẠT";
-    }
-}
-
-function updatePumpState(state) {
-    pumpOn = state === "ON";
-
-    const stateElement = document.getElementById("pumpState");
-    const button = document.getElementById("pumpButton");
-
-    if (stateElement) {
-        stateElement.textContent = pumpOn ? "ĐANG BẬT" : "ĐANG TẮT";
-    }
-
-    if (button) {
-        button.textContent = pumpOn ? "TẮT MÁY BƠM" : "BẬT MÁY BƠM";
-    }
-}
-
-function connectMQTT() {
-    if (typeof mqtt === "undefined") {
-        setConnection("disconnected", "Lỗi thư viện MQTT");
-        console.error("Khong tai duoc MQTT.js");
+    if (state !== "ON" && state !== "OFF") {
         return;
     }
 
-    setConnection("connecting", "Đang kết nối...");
+    const element = document.getElementById(
+        device === "fan" ? "fanState" : "pumpState"
+    );
 
-    const options = {
-        clientId: "FireAlarmWeb_" + Math.random().toString(16).slice(2, 10),
+    if (device === "fan") {
+        fanOn = state === "ON";
+    } else {
+        pumpOn = state === "ON";
+    }
+
+    element.textContent = state === "ON" ? "ĐANG BẬT" : "ĐANG TẮT";
+    element.className = "device-state " + (state === "ON" ? "on" : "off");
+}
+
+function connectMQTT() {
+    updateConnection("connecting", "Đang kết nối MQTT...");
+
+    client = mqtt.connect(BROKER, {
+        clientId: "PHAMTIENLUC_WEB_" + Math.random().toString(16).substring(2, 10),
         clean: true,
         connectTimeout: 10000,
         reconnectPeriod: 3000
-    };
-
-    client = mqtt.connect(BROKER, options);
+    });
 
     client.on("connect", function () {
-        console.log("Da ket noi MQTT HiveMQ!");
-
-        setConnection("connected", "Đã kết nối MQTT");
+        updateConnection("connected", "Đã kết nối MQTT");
 
         client.subscribe([
             TOPIC_GAS,
@@ -210,99 +167,81 @@ function connectMQTT() {
             TOPIC_PUMP_STATE
         ], function (error) {
             if (error) {
-                console.error("Loi dang ky Topic:", error);
+                console.error("Lỗi đăng ký Topic:", error);
             } else {
-                console.log("Da dang ky cac Topic!");
+                console.log("Đã đăng ký các Topic MQTT");
             }
         });
     });
 
     client.on("message", function (topic, message) {
-        const value = message.toString().trim();
-
-        console.log("Nhan du lieu:", topic, value);
+        const value = Number(message.toString());
 
         if (topic === TOPIC_GAS) {
-            const gas = Number(value);
-
-            if (Number.isFinite(gas)) {
-                updateGas(gas);
+            if (Number.isFinite(value)) {
+                updateGas(value);
             }
         }
 
         else if (topic === TOPIC_TEMP) {
-            const temperature = Number(value);
-
-            if (Number.isFinite(temperature)) {
-                updateTemperature(temperature);
+            if (Number.isFinite(value)) {
+                updateTemperature(value);
             }
         }
 
         else if (topic === TOPIC_FAN_STATE) {
-            updateFanState(value);
+            updateDeviceState("fan", message);
         }
 
         else if (topic === TOPIC_PUMP_STATE) {
-            updatePumpState(value);
+            updateDeviceState("pump", message);
         }
     });
 
     client.on("reconnect", function () {
-        setConnection("connecting", "Đang kết nối lại...");
-        console.log("Dang ket noi lai MQTT...");
+        updateConnection("connecting", "Đang kết nối lại...");
     });
 
     client.on("offline", function () {
-        setConnection("disconnected", "Mất kết nối MQTT");
-        console.log("MQTT offline");
-    });
-
-    client.on("close", function () {
-        setConnection("disconnected", "Đã ngắt kết nối");
+        updateConnection("disconnected", "Mất kết nối MQTT");
     });
 
     client.on("error", function (error) {
-        console.error("Loi MQTT:", error);
-        setConnection("disconnected", "Lỗi kết nối MQTT");
+        console.error("MQTT error:", error);
+        updateConnection("disconnected", "Lỗi kết nối MQTT");
+    });
+
+    client.on("close", function () {
+        updateConnection("disconnected", "Đã ngắt kết nối");
     });
 }
 
-function toggleDevice(device) {
+function sendCommand(device, command) {
     if (!client || !client.connected) {
-        alert("Website chua ket noi MQTT!");
+        alert("Website chưa kết nối MQTT!");
         return;
     }
 
     let topic;
-    let command;
 
     if (device === "fan") {
         topic = TOPIC_FAN_SET;
-        command = fanOn ? "OFF" : "ON";
-    }
-
-    else if (device === "pump") {
+    } else if (device === "pump") {
         topic = TOPIC_PUMP_SET;
-        command = pumpOn ? "OFF" : "ON";
-    }
-
-    else {
+    } else {
         return;
     }
 
     client.publish(topic, command, function (error) {
         if (error) {
-            console.error("Loi gui lenh:", error);
-            alert("Khong gui duoc lenh dieu khien!");
+            console.error("Không gửi được lệnh:", error);
         } else {
-            console.log("Da gui lenh:", topic, command);
+            console.log("Đã gửi", command, "đến", topic);
         }
     });
 }
 
-window.toggleDevice = toggleDevice;
-
-document.addEventListener("DOMContentLoaded", function () {
+window.addEventListener("load", function () {
     createCharts();
     connectMQTT();
 });
