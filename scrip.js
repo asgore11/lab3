@@ -7,7 +7,7 @@ const options = {
     clientId: "WebFireAlarm_" + Math.random().toString(16).slice(2, 10)
 };
 
-const client = mqtt.connect(broker, options);
+const broker = "wss://broker.hivemq.com:8884/mqtt";
 
 const TOPIC_GAS = "firealarm476646/gas";
 const TOPIC_TEMP = "firealarm476646/temperature";
