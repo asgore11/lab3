@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống báo cháy IoT</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>HỆ THỐNG BÁO CHÁY IoT</h1>
+
+        <p id="connection">Đang kết nối MQTT...</p>
+
+        <div class="sensor-container">
+            <div class="card">
+                <h2>Nồng độ khí gas</h2>
+                <p><span id="gas">--</span> %</p>
+            </div>
+
+            <div class="card">
+                <h2>Nhiệt độ</h2>
+                <p><span id="temperature">--</span> °C</p>
+            </div>
+        </div>
+
+        <h2>ĐIỀU KHIỂN THIẾT BỊ</h2>
+
+        <div class="device">
+            <h3>Quạt</h3>
+            <p>Trạng thái: <span id="fanState">--</span></p>
+            <button onclick="controlDevice('fan','ON')">BẬT</button>
+            <button onclick="controlDevice('fan','OFF')">TẮT</button>
+            <button onclick="controlDevice('fan','AUTO')">TỰ ĐỘNG</button>
+        </div>
+
+        <div class="device">
+            <h3>Máy bơm</h3>
+            <p>Trạng thái: <span id="pumpState">--</span></p>
+            <button onclick="controlDevice('pump','ON')">BẬT</button>
+            <button onclick="controlDevice('pump','OFF')">TẮT</button>
+            <button onclick="controlDevice('pump','AUTO')">TỰ ĐỘNG</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
