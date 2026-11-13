@@ -1,15 +1,14 @@
 const ID = "PHAMTIENLUC"
 const BROKER = "wss://broker.hivemq.com:8884/mqtt";
 
-const TOPIC_GAS = "firealarm476646/gas";
-const TOPIC_TEMP = "firealarm476646/temperature";
+const TOPIC_GAS = "PHAMTIENLUC/gas";
+const TOPIC_TEMP = "PHAMTIENLUC/temperature";
 
-const TOPIC_FAN_SET = "firealarm476646/fan/set";
-const TOPIC_PUMP_SET = "firealarm476646/pump/set";
+const TOPIC_FAN_SET = "PHAMTIENLUC/fan/set";
+const TOPIC_PUMP_SET = "PHAMTIENLUC/pump/set";
 
-const TOPIC_FAN_STATE = "firealarm476646/fan/state";
-const TOPIC_PUMP_STATE = "firealarm476646/pump/state";
-
+const TOPIC_FAN_STATE = "PHAMTIENLUC/fan/state";
+const TOPIC_PUMP_STATE = "PHAMTIENLUC/pump/state";
 const GAS_THRESHOLD = 40;
 const TEMP_THRESHOLD = 35;
 
