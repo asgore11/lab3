@@ -1,64 +1,150 @@
 
-body {
-    font-family: Arial, sans-serif;
-    background: #eef2f7;
+* {
+    box-sizing: border-box;
     margin: 0;
-    padding: 20px;
-    text-align: center;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #10151f;
+    color: #f1f5f9;
+    padding: 30px 20px;
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1100px;
     margin: auto;
 }
 
 h1 {
-    color: #c62828;
-}
-
-.sensor-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.card, .device {
-    background: white;
-    padding: 20px;
-    margin: 15px 0;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px #cccccc;
-}
-
-.card {
-    width: 260px;
-}
-
-.card p {
     font-size: 30px;
-    color: #1565c0;
-    font-weight: bold;
-}
-
-.device {
-    margin-top: 20px;
-}
-
-button {
-    padding: 10px 20px;
-    margin: 5px;
-    border: none;
-    border-radius: 5px;
-    background: #1976d2;
-    color: white;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #0d47a1;
+    color: #ffffff;
+    margin-bottom: 10px;
+    text-align: left;
+    border-left: 5px solid #ef4444;
+    padding-left: 15px;
 }
 
 #connection {
-    font-weight: bold;
+    display: inline-block;
+    margin: 12px 0 28px;
+    padding: 9px 16px;
+    border-radius: 20px;
+    background: #1e293b;
+    color: #facc15;
+    font-size: 14px;
+}
+
+h2 {
+    font-size: 20px;
+    margin: 25px 0 18px;
+    color: #e2e8f0;
+}
+
+.sensor-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.card, .device {
+    background: #1b2432;
+    border: 1px solid #303b4c;
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.card {
+    width: auto;
+    text-align: left;
+}
+
+.card h2 {
+    color: #94a3b8;
+    font-size: 16px;
+    margin: 0 0 18px;
+}
+
+.card p {
+    font-size: 38px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+#gas {
+    color: #f87171;
+}
+
+#temperature {
+    color: #60a5fa;
+}
+
+.device {
+    margin-top: 16px;
+}
+
+.device h3 {
+    font-size: 19px;
+    margin-bottom: 12px;
+}
+
+.device p {
+    color: #cbd5e1;
+    margin-bottom: 18px;
+}
+
+button {
+    min-width: 105px;
+    padding: 11px 18px;
+    margin: 4px;
+    border: none;
+    border-radius: 7px;
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    background: #334155;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+button:nth-of-type(1) {
+    background: #dc2626;
+}
+
+button:nth-of-type(2) {
+    background: #475569;
+}
+
+button:nth-of-type(3) {
+    background: #0d9488;
+}
+
+@media (max-width: 650px) {
+    body {
+        padding: 20px 12px;
+    }
+
+    h1 {
+        font-size: 23px;
+    }
+
+    .sensor-container {
+        grid-template-columns: 1fr;
+    }
+
+    .card p {
+        font-size: 32px;
+    }
+
+    button {
+        min-width: 85px;
+        padding: 10px;
+    }
 }
