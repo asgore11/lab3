@@ -1,4 +1,4 @@
-
+const ID = "PHAMTIENLUC"
 const BROKER = "wss://broker.hivemq.com:8884/mqtt";
 
 const TOPIC_GAS = "firealarm476646/gas";
