@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống báo cháy IoT</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <div>
+            <h1>HỆ THỐNG BÁO CHÁY IoT</h1>
+            <p>Giám sát khí gas, khói và nhiệt độ</p>
+        </div>
+        <div class="connection">
+            <span id="connectionDot"></span>
+            <span id="connection">Đang kết nối...</span>
+        </div>
+    </header>
+
+    <h2>GIÁM SÁT CẢM BIẾN</h2>
+
+    <section class="sensor-container">
+
+        <div class="sensor-card gas-card">
+            <div class="sensor-icon">♨</div>
+            <p>NỒNG ĐỘ KHÍ GAS</p>
+            <div class="sensor-value">
+                <span id="gas" class="sensor-number">--</span>
+                <span class="unit">%</span>
+            </div>
+            <span class="sensor-status" id="gasStatus">Đang chờ dữ liệu</span>
+        </div>
+
+        <div class="sensor-card temp-card">
+            <div class="sensor-icon">🌡</div>
+            <p>NHIỆT ĐỘ</p>
+            <div class="sensor-value">
+                <span id="temperature" class="sensor-number">--</span>
+                <span class="unit">°C</span>
+            </div>
+            <span class="sensor-status" id="tempStatus">Đang chờ dữ liệu</span>
+        </div>
+
+    </section>
+
+    <h2>BIỂU ĐỒ THEO DÕI THỜI GIAN THỰC</h2>
+
+    <section class="chart-container">
+        <div class="chart-card">
+            <h3>Nồng độ khí gas (%)</h3>
+            <canvas id="gasChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h3>Nhiệt độ (°C)</h3>
+            <canvas id="tempChart"></canvas>
+        </div>
+    </section>
+
+    <h2>ĐIỀU KHIỂN THIẾT BỊ - MANUAL</h2>
+
+    <section class="control-container">
+
+        <div class="control-card">
+            <h3>QUẠT THÔNG GIÓ</h3>
+            <p>Trạng thái:
+                <strong id="fanState">--</strong>
+            </p>
+            <button id="fanButton" onclick="toggleDevice('fan')">
+                BẬT QUẠT
+            </button>
+        </div>
+
+        <div class="control-card">
+            <h3>MÁY BƠM</h3>
+            <p>Trạng thái:
+                <strong id="pumpState">--</strong>
+            </p>
+            <button id="pumpButton" onclick="toggleDevice('pump')">
+                BẬT MÁY BƠM
+            </button>
+        </div>
+
+    </section>
+
+    <footer>
+        HỆ THỐNG GIÁM SÁT VÀ CẢNH BÁO CHÁY SỬ DỤNG ESP32 - MQTT
+    </footer>
+
+</div>
+
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
